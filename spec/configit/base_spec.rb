@@ -34,7 +34,7 @@ describe Configit::Base do
     end
 
     it "should set the required state of the attribute" do
-      @foo.required.should == true
+      @foo.required?.should == true
     end
     
     it "should set the type of the attribute" do
@@ -74,7 +74,7 @@ describe Configit::Base do
     end
 
     it "should set required to false by default" do
-      @bar.required.should == false
+      @bar.required?.should == false
     end
 
     it "should raise an AttributeAlreadyDefined exception when an attribute is
@@ -89,6 +89,12 @@ describe Configit::Base do
     FooConfig.attribute :foo, :required => true
     config = FooConfig.load_from_string("")
     config.valid?.should be_false
+  end
+
+  it "should be valid when non required attributes are abset" do
+    FooConfig.attribute :foo, :required => false
+    config = FooConfig.load_from_string("")
+    config.valid?.should be_true
   end
 
   describe ".load_from_string!" do
@@ -195,6 +201,21 @@ describe Configit::Base do
       config.clear_errors
       config.errors.should == []
     end
+  end
+
+  it "should enable you to override attribute methods and use super" do
+    FooConfig.attribute :foo, :type => :symbol
+    FooConfig.attribute :bar, :type => :symbol
+    FooConfig.class_eval do
+      def foo
+        super || bar
+      end
+    end
+    config = FooConfig.new
+    config.bar = :bar
+    config.foo.should == :bar
+    config.foo = :foo
+    config.foo.should == :foo
   end
 end
 

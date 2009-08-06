@@ -138,14 +138,27 @@ module Configit
         attr = AttributeDefinition.new(name, desc, options)
         schema[name] = attr
 
-        define_method name do
-          value = attributes[name]
-          @@converters[attr.type].call(value)
+
+        @attribute_module ||= begin
+          m = Module.new 
+          include m
+          m
         end
 
-        define_method "#{name}=" do |value| 
-          attributes[name] = value
-          value
+        @attribute_module.class_eval do
+          define_method name do
+            value = attributes[name]
+            if value != nil
+              @@converters[attr.type].call(value)
+            else
+              value
+            end
+          end
+
+          define_method "#{name}=" do |value| 
+            attributes[name] = value
+            value
+          end
         end
 
         return attr

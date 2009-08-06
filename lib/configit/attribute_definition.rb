@@ -3,7 +3,6 @@ module Configit
   class AttributeDefinition
     attr_reader :name
     attr_reader :desc
-    attr_reader :required
     attr_reader :default
     attr_reader :type
     
@@ -24,10 +23,14 @@ module Configit
         raise ArgumentError, "Invalid options #{options.keys.join(',')}"
       end
     end
+
+    def required?
+      @required
+    end
   
     # Returns an error string if the value is not valid per this AttributeDefinition
     def validate(value)
-      return "#{name} is a required attribute" if value == nil || value == ""
+      return "#{name} is a required attribute" if required? && value == nil || value == ""
       # TODO: add type validation here
       nil
     end
