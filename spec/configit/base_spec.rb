@@ -1,5 +1,7 @@
 require File.join(File.dirname(__FILE__), %w[.. spec_helper])
 
+require 'tempfile'
+
 describe Configit::Base do
   before :each do
     Object.send(:remove_const, :FooConfig) if Object.const_defined? :FooConfig
@@ -47,9 +49,9 @@ describe Configit::Base do
 
     it "should properly convert the type of attribute on read and set" do
       FooConfig.attribute :integer, :type => :integer
-      FooConfig.attribute :string, :type => :string
-      FooConfig.attribute :symbol, :type => :symbol
-      FooConfig.attribute :float, :type => :float
+      FooConfig.attribute :string,  :type => :string
+      FooConfig.attribute :symbol,  :type => :symbol
+      FooConfig.attribute :float,   :type => :float
 
       config = FooConfig.new
 
@@ -79,26 +81,91 @@ describe Configit::Base do
     end
   end
 
-  it "should load from a string" do
-    pending
+  describe ".load_from_string" do
+    before do
+      FooConfig.attribute :foo, :type => :integer
+      FooConfig.attribute :bar, :type => :string
+    end
+
+    it "should load a valid yaml config from a string successfully" do
+      config = FooConfig.load_from_string %q{
+                  foo: 3
+                  bar: bar value
+                  }
+
+      config.foo.should == 3
+      config.bar.should == "bar value"
+      config.valid?.should be_true
+    end
+
+    it "should create errors when it sees unknown attributes" do
+      config = FooConfig.load_from_string %q{
+                  something: 3
+                  bar: bar value
+                  }
+
+      config.valid?.should == false
+      config.errors.first.should =~ /something/
+    end
+
+    it "should evaluate erb successfully" do
+      config = FooConfig.load_from_string %q{
+                  bar: <%= "foo " + "bar" %>
+                  }
+      config.bar.should == "foo bar"
+    end
+
+    it "should not evaluate erb if .evaluate_erb is set to false" do
+      FooConfig.evaluate_erb = false
+      config = FooConfig.load_from_string %q{
+                  bar: <%= 3 %>
+                  }
+      config.bar.should == "<%= 3 %>"
+    end
   end
 
-  it "should load from a file" do
-    pending
+  describe ".load_from_file" do
+    before do
+      FooConfig.attribute :foo
+      FooConfig.attribute :bar
+    end
+
+    it "should load from a file successfully" do
+      file = Tempfile.new("config")
+      file.write "foo: bar"
+      file.flush
+      file.close
+      config = FooConfig.load_from_file(file.path)
+      config.foo.should == 'bar'
+    end
+    
+    it "should raise an ArgumentError when the file does not exist" do
+      lambda {
+        FooConfig.load_from_file("/etc/kajdf33sdf")
+      }.should raise_error(ArgumentError)
+    end
+
+    it "should raise an ArgumentError if the file is not readable" do
+      file = Tempfile.new("config")
+      file.write "foo: bar"
+      file.flush
+      file.close
+      File.chmod(0000, file.path)
+      lambda {
+        config = FooConfig.load_from_file(file.path)
+      }.should raise_error(ArgumentError)
+    end
   end
 
-  it "should validate required attributes correctly" do
-    pending
+  describe ".clear_errors" do
+    it "should clear the errors on the config" do
+      config = FooConfig.new
+      config.errors << "Some Error"
+      config.valid?.should == false
+      config.clear_errors
+      config.valid?.should == true
+    end
   end
-
-  it "should convert types to the correct ruby data type" do
-    pending
-  end
-
-    # config.valid.should be_true
-    # config.errors.should be_empty
-    # config.print_error_messages.should be_nil
-    # config.print_documentation
 end
 
 # EOF

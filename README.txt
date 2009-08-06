@@ -1,18 +1,43 @@
 configit
-    by FIXME (your name)
-    FIXME (url)
+    by Kris Rasmussen
+    http://www.aptana.com
 
 == DESCRIPTION:
 
-FIXME (describe your package)
+The purpose of this gem is to make it very easy to consume configuration files
+and define them.
 
 == FEATURES/PROBLEMS:
 
-* FIXME (list of features or problems)
+* Easilly define config attributes directly on the class
+* Provides validation of configs
+* Automatically converts attributes to the correct type
+* Enables you to access attribute values as attributes on the class instance
+* Load config from files, strings, or IO
+* Can turn on or off ERB evaluation before loading from yaml
+* Treats strings / symbol keys as equivalent from yaml config
 
 == SYNOPSIS:
 
-  FIXME (code sample of usage)
+  class MyConfig << Configit::Base
+    attribute :foo, :required => true
+    attribute :bar, "Some description", :type => :integer, :default => 10
+    attribute :log_level, "Set the log level", :default => :debug, :type => :symbol
+  end
+
+  config = MyConfig.load_from_file("/etc/myconfig")
+  
+  config.foo
+  config.bar
+  config.log_level
+
+  config.foo = "new value"
+
+  config.valid # true or false
+  config.errors.each do |error|
+    puts error.message
+    puts error.attribute.name
+  end
 
 == REQUIREMENTS:
 
@@ -20,7 +45,7 @@ FIXME (describe your package)
 
 == INSTALL:
 
-* FIXME (sudo gem install, anything else)
+  sudo gem install krisr-configit --source gems.github.com
 
 == LICENSE:
 

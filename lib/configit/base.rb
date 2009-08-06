@@ -1,3 +1,6 @@
+require 'erb'
+require 'yaml'
+
 module Configit
   # The base class the custom configuration classes should derive from.
   # 
@@ -21,10 +24,52 @@ module Configit
       self.class.attributes
     end
 
+    def errors
+      @errors ||= []
+    end
+
+    def clear_errors
+      @errors = []
+    end
+
+    # Returns true if there are no errors, false otherwise
+    def valid?
+      errors.empty?
+    end
+
     class << self
       # Returns a hash of Configit::Attribute's keyed by attribute name.
       def attributes
         @attributes ||= {}
+      end
+
+      def evaluate_erb=(value)
+        raise ArgumentError unless value == true || value == false
+        @evaluate_erb = value
+      end
+
+      # Loads the config from a YAML string.
+      # 
+      # Unrecognized attributes are placed into the errors list.
+      def load_from_string(string)
+        config = self.new
+        string = ERB.new(string).result unless @evaluate_erb == false
+        YAML.load(string).each do |key,value|
+          key = key.to_sym
+          if attributes.has_key?(key)
+            config.send("#{key}=", value) 
+          else
+            config.errors << "#{key} is not a valid attribute"
+          end
+        end
+        return config
+      end
+
+      def load_from_file(filename)
+        raise ArgumentError, "File #{filename} does not exist"  unless File.exists?(filename)
+        raise ArgumentError, "File #{filename} is not readable" unless File.readable?(filename)
+
+        return load_from_string(IO.read(filename))
       end
 
       # Defines a new attribute on the config.

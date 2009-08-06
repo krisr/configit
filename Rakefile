@@ -19,9 +19,9 @@ require 'configit'
 task :default => 'spec:run'
 
 PROJ.name = 'configit'
-PROJ.authors = 'FIXME (who is writing this software)'
-PROJ.email = 'FIXME (your e-mail)'
-PROJ.url = 'FIXME (project homepage)'
+PROJ.authors = 'Kris Rasmussen'
+PROJ.email = 'kris@aptana.com'
+PROJ.url = 'http://www.aptana.com'
 PROJ.version = Configit::VERSION
 PROJ.rubyforge.name = 'configit'
 PROJ.ignore_file = '.gitignore'
