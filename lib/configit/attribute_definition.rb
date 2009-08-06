@@ -24,5 +24,12 @@ module Configit
         raise ArgumentError, "Invalid options #{options.keys.join(',')}"
       end
     end
+  
+    # Returns an error string if the value is not valid per this AttributeDefinition
+    def validate(value)
+      return "#{name} is a required attribute" if value == nil || value == ""
+      # TODO: add type validation here
+      nil
+    end
   end
 end

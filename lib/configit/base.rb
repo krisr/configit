@@ -42,7 +42,24 @@ module Configit
 
     # Returns true if there are no errors, false otherwise
     def valid?
+      clear_errors
+
+      unknown_attributes = attributes.keys - schema.keys
+      unknown_attributes.each do |key|
+        errors << "#{key} is not a valid attribute name"
+      end
+
+      schema.values.each do |attribute|
+        if error = attribute.validate(attributes[attribute.name])
+          errors << error
+        end
+      end
+      
       errors.empty?
+    end
+
+    def schema
+      self.class.schema
     end
 
     class << self
@@ -62,13 +79,9 @@ module Configit
       def load_from_string(string)
         config = self.new
         string = ERB.new(string).result unless @evaluate_erb == false
-        YAML.load(string).each do |key,value|
+        (YAML.load(string) || {}).each do |key,value|
           key = key.to_sym
-          if schema.has_key?(key)
-            config.attributes[key] = value
-          else
-            config.errors << "#{key} is not a valid attribute"
-          end
+          config.attributes[key] = value
         end
         return config
       end

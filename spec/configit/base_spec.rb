@@ -84,6 +84,12 @@ describe Configit::Base do
       }.should raise_error(Configit::AttributeAlreadyDefined)
     end
   end
+  
+  it "should enforce that required attributes are present" do
+    FooConfig.attribute :foo, :required => true
+    config = FooConfig.load_from_string("")
+    config.valid?.should be_false
+  end
 
   describe ".load_from_string!" do
     it "should raise an ArgumentError if the config is not valid" do
@@ -184,10 +190,10 @@ describe Configit::Base do
   describe ".clear_errors" do
     it "should clear the errors on the config" do
       config = FooConfig.new
-      config.errors << "Some Error"
+      config.attributes['foo'] = 3
       config.valid?.should == false
       config.clear_errors
-      config.valid?.should == true
+      config.errors.should == []
     end
   end
 end
