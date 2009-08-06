@@ -85,6 +85,26 @@ describe Configit::Base do
     end
   end
 
+  describe ".load_from_string!" do
+    it "should raise an ArgumentError if the config is not valid" do
+      lambda {
+        FooConfig.load_from_string! "asdfasdf: adf"
+      }.should raise_error(ArgumentError, /asdfasdf/)
+    end
+  end
+  
+  describe ".load_from_file!" do
+    it "should raise an ArgumentError if the config is not valid" do
+      file = Tempfile.new("config")
+      file.write "foo1: bar"
+      file.flush
+      file.close
+      lambda {
+        config = FooConfig.load_from_file!(file.path)
+      }.should raise_error(ArgumentError, /foo1/)
+    end
+  end
+
   describe ".load_from_string" do
     before do
       FooConfig.attribute :foo, :type => :integer

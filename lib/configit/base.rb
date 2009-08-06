@@ -32,6 +32,14 @@ module Configit
       @errors = []
     end
 
+    def ensure_valid!
+      if !valid?
+        message = "#{self.class.name} config invalid. #{self.errors.first}"
+        raise ArgumentError, message
+      end
+      true
+    end
+
     # Returns true if there are no errors, false otherwise
     def valid?
       errors.empty?
@@ -65,11 +73,28 @@ module Configit
         return config
       end
 
+      # Load the config from a file.
       def load_from_file(filename)
         raise ArgumentError, "File #{filename} does not exist"  unless File.exists?(filename)
         raise ArgumentError, "File #{filename} is not readable" unless File.readable?(filename)
 
         return load_from_string(IO.read(filename))
+      end
+
+      # Same as load_from_string except it will raise an ArgumentError if the
+      # config is not valid
+      def load_from_string!(string)
+        config = load_from_string(string)
+        config.ensure_valid!
+        config
+      end
+
+      # Same as load_from_file except it will raise an ArgumentError if the
+      # config is not valid.
+      def load_from_file!(filename)
+        config = load_from_file(filename)
+        config.ensure_valid!
+        config
       end
 
       # Defines a new attribute on the config.
