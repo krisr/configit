@@ -21,7 +21,7 @@ module Configit
 
     # Returns the attributes defined for this class.
     def attributes
-      self.class.attributes
+      @attributes ||= {}
     end
 
     def errors
@@ -38,9 +38,9 @@ module Configit
     end
 
     class << self
-      # Returns a hash of Configit::Attribute's keyed by attribute name.
-      def attributes
-        @attributes ||= {}
+      # Returns a hash of Configit::AttributeDefinition's keyed by attribute name.
+      def schema
+        @schema ||= {}
       end
 
       def evaluate_erb=(value)
@@ -56,8 +56,8 @@ module Configit
         string = ERB.new(string).result unless @evaluate_erb == false
         YAML.load(string).each do |key,value|
           key = key.to_sym
-          if attributes.has_key?(key)
-            config.send("#{key}=", value) 
+          if schema.has_key?(key)
+            config.attributes[key] = value
           else
             config.errors << "#{key} is not a valid attribute"
           end
@@ -90,22 +90,23 @@ module Configit
       #   The type of the attribute. Should be one of :integer, :string
       #   :symbol, :float
       def attribute(name, desc=nil, options={})
-        raise AttributeAlreadyDefined, name if attributes.has_key? name
+        raise AttributeAlreadyDefined, name if schema.has_key? name
         
         if options == {} && Hash === desc
           options = desc
           desc = nil
         end
 
-        attr = Attribute.new(name, desc, options)
-        attributes[name] = attr
+        attr = AttributeDefinition.new(name, desc, options)
+        schema[name] = attr
 
-        # Define the accessor
-        attr_reader name
+        define_method name do
+          value = attributes[name]
+          @@converters[attr.type].call(value)
+        end
 
         define_method "#{name}=" do |value| 
-          value = @@converters[attr.type].call(value)
-          instance_variable_set("@#{name}", value)
+          attributes[name] = value
           value
         end
 

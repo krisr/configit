@@ -16,13 +16,13 @@ describe Configit::Base do
       @bar = FooConfig.attribute :bar
     end
 
-    it "should add the attribute to the attributes of the class" do
-      FooConfig.attributes[:foo].should == @foo
+    it "should add the attribute to the schema of the class" do
+      FooConfig.schema[:foo].should == @foo
     end
 
     it "should define the attribute successfully" do
       @foo.should_not be_nil
-      @foo.should be_a Configit::Attribute
+      @foo.should be_a Configit::AttributeDefinition
     end
 
     it "should set the name of the attribute" do
@@ -56,6 +56,7 @@ describe Configit::Base do
       config = FooConfig.new
 
       config.integer = "3"
+      config.attributes[:integer].should == "3"
       config.integer.should == 3
       config.integer = 3
       config.integer.should == 3
@@ -63,6 +64,9 @@ describe Configit::Base do
       config.integer.should == 3
       config.integer = "foo"
       config.integer.should == 0
+
+      # Need to test rest of conversions
+      pending
     end
 
     it "should set type to :string by default" do
@@ -98,7 +102,7 @@ describe Configit::Base do
       config.valid?.should be_true
     end
 
-    it "should create errors when it sees unknown attributes" do
+    it "should create errors when it sees unknown schema" do
       config = FooConfig.load_from_string %q{
                   something: 3
                   bar: bar value

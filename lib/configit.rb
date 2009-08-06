@@ -45,7 +45,7 @@ module Configit
 end  # module Configit
 
 require Configit.libpath('configit/exceptions')
-require Configit.libpath('configit/attribute')
+require Configit.libpath('configit/attribute_definition')
 require Configit.libpath('configit/base')
 
 # EOF
