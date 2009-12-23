@@ -2,18 +2,18 @@
 
 Gem::Specification.new do |s|
   s.name = %q{configit}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kris Rasmussen"]
-  s.date = %q{2009-10-08}
+  s.date = %q{2009-12-22}
   s.default_executable = %q{configit}
   s.description = %q{The purpose of this gem is to make it very easy to consume configuration files
 and define them.}
   s.email = %q{kris@aptana.com}
   s.executables = ["configit"]
   s.extra_rdoc_files = ["History.txt", "README.txt", "bin/configit"]
-  s.files = [".DS_Store", ".bnsignore", "History.txt", "README.txt", "Rakefile", "bin/configit", "lib/configit.rb", "lib/configit/attribute_definition.rb", "lib/configit/base.rb", "lib/configit/exceptions.rb", "spec/configit/base_spec.rb", "spec/configit_spec.rb", "spec/spec.opts", "spec/spec_helper.rb", "test/test_configit.rb"]
+  s.files = [".DS_Store", ".bnsignore", "History.txt", "README.txt", "Rakefile", "bin/configit", "configit.gemspec", "lib/configit.rb", "lib/configit/attribute_definition.rb", "lib/configit/base.rb", "lib/configit/exceptions.rb", "spec/configit/base_spec.rb", "spec/configit_spec.rb", "spec/spec.opts", "spec/spec_helper.rb", "test/test_configit.rb"]
   s.homepage = %q{http://www.aptana.com}
   s.rdoc_options = ["--main", "README.txt"]
   s.require_paths = ["lib"]
