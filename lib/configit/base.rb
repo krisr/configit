@@ -147,7 +147,7 @@ module Configit
 
         @attribute_module.class_eval do
           define_method name do
-            value = attributes[name]
+            value = attributes[name] || attr.default
             if value != nil
               @@converters[attr.type].call(value)
             else
