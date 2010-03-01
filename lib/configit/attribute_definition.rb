@@ -30,7 +30,9 @@ module Configit
   
     # Returns an error string if the value is not valid per this AttributeDefinition
     def validate(value)
-      return "#{name} is a required attribute" if required? && value == nil || value == ""
+      if required? && (value == nil || value == "") && (default == nil || default == "")
+        return "#{name} is a required attribute"
+      end
       # TODO: add type validation here
       nil
     end

@@ -90,6 +90,12 @@ describe Configit::Base do
     config = FooConfig.load_from_string("")
     config.valid?.should be_false
   end
+  
+  it "should be valid when required attributes with default values are absent" do
+    FooConfig.attribute :foo, :required => true, :default => "foo"
+    config = FooConfig.load_from_string("")
+    config.valid?.should be_true
+  end
 
   it "should be valid when non required attributes are abset" do
     FooConfig.attribute :foo, :required => false
