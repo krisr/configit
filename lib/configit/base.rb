@@ -16,7 +16,8 @@ module Configit
       :string  => lambda {|v| v.to_s},
       :integer => lambda {|v| v.to_i},
       :float   => lambda {|v| v.to_f},
-      :symbol  => lambda {|v| v.to_sym}
+      :symbol  => lambda {|v| v.to_sym},
+      :array   => lambda {|v| v.to_a}
     }
 
     # Returns the attributes defined for this class.
