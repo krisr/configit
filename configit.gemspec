@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{configit}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kris Rasmussen"]
-  s.date = %q{2010-02-17}
+  s.date = %q{2010-03-01}
   s.default_executable = %q{configit}
   s.description = %q{The purpose of this gem is to make it very easy to consume configuration files
 and define them.}
